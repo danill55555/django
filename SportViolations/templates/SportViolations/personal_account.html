@@ -1,0 +1,584 @@
+{% extends 'SportViolations/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- component -->
+<link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/styles/tailwind.css">
+<link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
+
+<!-- component -->
+
+
+<div class="container mx-auto bg-gray-200  dark:bg-gray-800   flex flex-wrap items-center  justify-center  ">
+            <div class="container mx-auto     bg-white  shadow-lg    transform   duration-200 easy-in-out"> <div class="h-32 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"></div>
+
+    <!-- Картинка -->
+    <div class="flex justify-center -mt-20 mb-5">
+        <img
+            class="h-60 w-80 md:w-96 bg-white p-4 rounded-full border-4 border-white shadow-lg transition-transform transform hover:scale-105"
+            src="https://sport-shkola-biryuch.ru/wp-content/uploads/2024/07/1-2.jpg"
+            alt="Спорт"
+        />
+    </div>
+
+                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <div class="container mx-auto">
+        <h1 class="text-2xl text-center font-bold ">{{ student.surname }} {{ student.name }}</h1>
+
+           <div class="flex flex-col sm:flex-row p-4">
+    <div class="flex flex-col sm:w-1/3">
+        <!-- Мои контакты -->
+        <div class="py-4 sm:order-none order-3">
+            <h2 class="text-2xl font-semibold text-purple-600">Контакты</h2>
+            <div class="border-b-2 border-purple-600 my-4"></div>
+            <div class="space-y-4"> <!-- Используем space-y-4 для удобного расстояния между элементами -->
+                <div class="flex items-center p-4 bg-white rounded shadow">
+                    <i class="fas fa-user mr-2 text-purple-500"></i>
+                    <div class="ml-1 text-gray-700 font-medium">Имя:</div>
+                    <p class="ml-2 text-gray-600 font-bold">{{ student.name }}</p>
+                </div>
+
+                <div class="flex items-center p-4 bg-white rounded shadow">
+                    <i class="fas fa-user mr-2 text-purple-500"></i>
+                    <div class="ml-1 text-gray-700 font-medium">Фамилия:</div>
+                    <p class="ml-2 text-gray-600 font-bold">{{ student.surname }}</p>
+                </div>
+
+                <div class="flex items-center p-4 bg-white rounded shadow">
+                    <i class="fas fa-user-circle mr-2 text-purple-500"></i>
+                    <div class="ml-1 text-gray-700 font-medium">Отчество:</div>
+                    <p class="ml-2 text-gray-600 font-bold">{{ student.patronymic }}</p>
+                </div>
+
+                <div class="flex items-center p-4 bg-white rounded shadow">
+                    <i class="fas fa-birthday-cake mr-2 text-purple-500"></i>
+                    <div class="ml-1 text-gray-700 font-medium">Дата рождения:</div>
+                    <p class="ml-2 text-gray-600 font-bold">{{ student.date_of_birth }}</p>
+                </div>
+
+                  <h2 class="text-md font-semibold text-purple-600 mt-4">Дата создания анкеты</h2>
+    <div class="flex items-center mt-1 p-4 bg-white rounded shadow">
+        <i class="fas fa-calendar-alt mr-2 text-purple-500"></i>
+        <p class="font-semibold text-md text-gray-700">{{ student.registration_date }}</p>
+    </div>
+
+            </div>
+        </div>
+
+
+
+        </div>
+           <div class="flex-1 sm:ml-4 mt-2">
+
+                  <!-- Анкета -->
+<div class="py-2 sm:order-none order-2">
+    <h2 class="text-2xl font-semibold text-purple-600">Анкета</h2>
+    <div class="border-b-2 border-purple-600 my-4"></div>
+
+    <div class="grid">
+        <div class="flex items-center  p-4 bg-white rounded shadow">
+            <i class="fas fa-running text-purple-500 mr-2"></i>
+            <div class="ml-2 text-gray-700">Спортивная квалификация (при наличии)<b class="px-2">-</b></div>
+            <p class="text-gray-600 px-2 font-bold">{% if student.qualification %}{{ student.qualification }}{% else %} - {% endif %}</p>
+        </div>
+
+        <div class="flex items-center  p-4 bg-white rounded shadow">
+            <i class="fas fa-dumbbell text-purple-500 mr-2"></i>
+            <div class="ml-2 text-gray-700">Стаж занятий спортом (при наличии)<b class="px-2">-</b></div>
+            <p class="text-gray-600 px-2 font-bold">{% if student.experience %}{{ student.experience }}{% else %} 0 {% endif %} лет</p>
+        </div>
+
+        <div class="flex items-center  p-4 bg-white rounded shadow">
+            <i class="fas fa-heartbeat text-purple-500 mr-2"></i>
+            <div class="ml-2 text-gray-700">Наличие хронических заболеваний<b class="px-2">-</b></div>
+            <p class="text-gray-600 px-2 font-bold">{% if student.chronic_conditions %}{{ student.chronic_conditions }}{% else %} Нет {% endif %}</p>
+        </div>
+
+        <div class="flex items-center  p-4 bg-white rounded shadow">
+            <i class="fas fa-user-md text-purple-500 mr-2"></i>
+            <div class="ml-2 text-gray-700">Рост мамы<b class="px-2">-</b></div>
+            <p class="text-gray-600 px-2 font-bold">{% if student.mother_height %}{{ student.mother_height }}{% else %} x {% endif %} см</p>
+        </div>
+
+        <div class="flex items-center  p-4 bg-white rounded shadow">
+            <i class="fas fa-futbol text-purple-500 mr-2"></i>
+            <div class="ml-2 text-gray-700">Вид спорта мамы<b class="px-2">-</b></div>
+            <p class="text-gray-600 px-2 font-bold">{% if student.mother_sport %}{{ student.mother_sport }}{% else %} x {% endif %}</p>
+        </div>
+    </div>
+
+
+</div>
+
+<!--        &lt;!&ndash; Данные антропометрии &ndash;&gt;-->
+<!--        <div class="py-4">-->
+<!--            <h2 class="text-xl font-semibold text-purple-600">Антропометрические данные</h2>-->
+<!--            <div class="border-b-2 border-purple-600 my-3"></div>-->
+<!--            {% if anthropometry %}-->
+<!--                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Рост:</strong> {{ anthropometry.height }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Масса:</strong> {{ anthropometry.weight }} кг-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина стопы:</strong> {{ anthropometry.foot_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина голени:</strong> {{ anthropometry.shin_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина бедра:</strong> {{ anthropometry.thigh_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Размах рук:</strong> {{ anthropometry.arm_span }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+
+<!--                        <strong>Объем талии:</strong> {{ anthropometry.waist_circumference }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Объем бедер:</strong> {{ anthropometry.hip_circumference }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Окружность грудной клетки:</strong> {{ anthropometry.chest_circumference }} см-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            {% else %}-->
+<!--                <div class="text-red-500">Данные антропометрии не найдены.</div>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Данные динамометрии запястья &ndash;&gt;-->
+<!--        <div class="py-4">-->
+<!--            <h2 class="text-xl font-semibold text-purple-600">Динамометрия запястья</h2>-->
+<!--            <div class="border-b-2 border-purple-600 my-3"></div>-->
+<!--            {% if wrist_dynamometry %}-->
+<!--                <div class="bg-white p-4 rounded shadow">-->
+<!--                    &lt;!&ndash; Предполагается, что в вашем WristDynamometry есть подобные атрибуты &ndash;&gt;-->
+<!--                    <strong>Сила левой руки:</strong> {{ wrist_dynamometry.left_hand_strength }} кг-->
+<!--                </div>-->
+<!--                <div class="bg-white p-4 rounded shadow">-->
+<!--                    <strong>Сила правой руки:</strong> {{ wrist_dynamometry.right_hand_strength }} кг-->
+<!--                </div>-->
+<!--                &lt;!&ndash; Добавьте другие поля, если нужно &ndash;&gt;-->
+<!--            {% else %}-->
+<!--                <div class="text-red-500">Данные динамометрии не найдены.</div>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+    </div>
+      </div>
+
+                </div>
+ {% if anthropometry %}
+       <div class="bg-white shadow rounded-lg p-4 ">
+    <h2 class="text-xl font-semibold text-center mb-4">Антропометрические и динамометрические данные</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4 my-2">
+        <div class="flex flex-col items-start">
+            <canvas id="anthropometryRadar" height="400"></canvas>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Описание для роста -->
+            <div class="bg-gray-100 rounded-lg p-3">
+                <h3 class="font-semibold">Рост</h3>
+                <p class="text-gray-600">{{ anthropometry.height }} см</p>
+                <p class="text-sm">Рекомендуется: средний рост от 160 см до 190 см.</p>
+                <p class="text-sm {% if anthropometry.height < 160 or anthropometry.height > 190 %}text-red-500{% else %}text-green-500{% endif %}">
+                    {% if anthropometry.height < 160 %}
+                        Рост маленький
+                    {% elif anthropometry.height > 190 %}
+                        Рост высокий
+                    {% else %}
+                        Рост в пределах нормы
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Описание для веса -->
+            <div class="bg-gray-100 rounded-lg p-3">
+                <h3 class="font-semibold">Вес</h3>
+                <p class="text-gray-600">{{ anthropometry.weight }} кг</p>
+                <p class="text-sm">Рекомендуется: средний вес от 50 кг до 90 кг.</p>
+                <p class="text-sm {% if anthropometry.weight < 50 or anthropometry.weight > 90 %}text-red-500{% else %}text-green-500{% endif %}">
+                    {% if anthropometry.weight < 50 %}
+                        Вес слишком низкий
+                    {% elif anthropometry.weight > 90 %}
+                        Вес слишком высокий
+                    {% else %}
+                        Вес в пределах нормы
+                    {% endif %}
+                </p>
+            </div>
+
+               <!-- Описание для длины стопы -->
+            <div class="bg-gray-100 rounded-lg p-3">
+                <h3 class="font-semibold">Длина стопы</h3>
+                <p class="text-gray-600">{{ anthropometry.foot_length }} см</p>
+                <p class="text-sm">Нормальные значения: от 23 см до 30 см.</p>
+                <p class="text-sm {% if anthropometry.foot_length < 23 or anthropometry.foot_length > 30 %}text-red-500{% else %}text-green-500{% endif %}">
+                    {% if anthropometry.foot_length < 23 %}
+                        Длина стопы маленькая
+                    {% elif anthropometry.foot_length > 30 %}
+                        Длина стопы большая
+                    {% else %}
+                        Длина стопы в пределах нормы
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="bg-gray-100 rounded-lg p-3">
+                <h3 class="font-semibold">Длина голени</h3>
+                <p class="text-gray-600">{{ anthropometry.shin_length }} см</p>
+                <p class="text-sm">Обычно: от 35 см до 50 см.</p>
+
+                <p class="text-sm {% if anthropometry.shin_length < 35 or anthropometry.shin_length > 50 %}text-red-500{% else %}text-green-500{% endif %}">
+                    {% if anthropometry.shin_length < 35 %}
+                        Длина голени маленькая
+                    {% elif anthropometry.shin_length > 50 %}
+                        Длина голени большая
+                    {% else %}
+                        Длина голени в пределах нормы
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Остальные параметры антропометрии аналогично -->
+            <!-- ... -->
+
+        </div>
+    </div>
+
+    <script>
+        const anthropometryValues = [
+            {{ anthropometry.height }},
+            {{ anthropometry.weight }},
+            {{ anthropometry.foot_length }},
+            {{ anthropometry.shin_length }},
+            {{ anthropometry.thigh_length }},
+            {{ anthropometry.arm_span }},
+            {{ anthropometry.waist_circumference }},
+            {{ anthropometry.hip_circumference }},
+            {{ anthropometry.chest_circumference }},
+        ];
+
+        const dynamometryValues = [
+            {{ wrist_dynamometry.left_hand }},
+            {{ wrist_dynamometry.right_hand }}
+        ];
+
+        const labels = [
+            'Рост',
+            'Вес',
+            'Длина стопы',
+            'Длина голени',
+            'Длина бедра',
+            'Размах рук',
+            'Объем талии',
+            'Объем бедер',
+            'Окружность грудной клетки',
+            'Сила левой руки',
+            'Сила правой руки'
+        ];
+
+        // Создаем массивы для двух наборов данных
+        const abilityValues = [...anthropometryValues, ...dynamometryValues];
+
+        const filteredLabels = [...labels];
+
+        // Определяем максимальное значение
+        const maxValue = Math.max(...abilityValues.filter(value => value > 0), 1); // минимальное значение 1, чтобы избежать деления на ноль
+
+        const anthropometryData = {
+            labels: filteredLabels,
+            datasets: [
+                {
+                    label: 'Антропометрические данные',
+                    data: anthropometryValues.concat(Array(dynamometryValues.length).fill(0)), // добавляем 0 для динамометрии
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Цвет для антропометрии (синий)
+                    borderColor: 'rgba(75, 192, 192, 1)', // Цвет для антропометрии (синий)
+                    borderWidth: 2,
+                    fill: true,
+                },
+                {
+                    label: 'Динамометрические данные',
+                    data: Array(anthropometryValues.length).fill(0).concat(dynamometryValues), // добавляем 0 для антропометрии
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // Цвет для динамометрии (красный)
+                    borderColor: 'rgba(255, 99, 132, 1)', // Цвет для динамометрии (красный)
+                    borderWidth: 2,
+                    fill: true,
+                }
+            ]
+        };
+
+        const config = {
+            type: 'radar',
+            data: anthropometryData,
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: Math.ceil(maxValue / 10) * 10 // Округляем до ближайшего большего десятка
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Антропометрические и динамометрические данные' }
+                }
+            }
+        };
+
+        const anthropometryRadar = new Chart(
+            document.getElementById('anthropometryRadar'),
+            config
+        );
+    </script>
+</div>
+                  {% endif %}
+
+
+
+<!--    <script>-->
+<!--        const anthropometryValues = [-->
+<!--            {{ anthropometry.height }},-->
+<!--            {{ anthropometry.weight }},-->
+<!--            {{ anthropometry.foot_length }},-->
+<!--            {{ anthropometry.shin_length }},-->
+<!--            {{ anthropometry.thigh_length }},-->
+<!--            {{ anthropometry.arm_span }},-->
+<!--            {{ anthropometry.waist_circumference }},-->
+<!--            {{ anthropometry.hip_circumference }},-->
+<!--            {{ anthropometry.chest_circumference }}-->
+<!--        ];-->
+
+<!--        // Определяем максимальное значение-->
+<!--        const maxValue = Math.max(...anthropometryValues);-->
+
+<!--        const anthropometryData = {-->
+<!--            labels: [-->
+<!--                'Рост',-->
+<!--                'Вес',-->
+<!--                'Длина стопы',-->
+<!--                'Длина голени',-->
+<!--                'Длина бедра',-->
+<!--                'Размах рук',-->
+<!--                'Объем талии',-->
+<!--                'Объем бедер',-->
+<!--                'Окружность грудной клетки'-->
+<!--            ],-->
+<!--            datasets: [{-->
+<!--                label: 'Значения',-->
+<!--                data: anthropometryValues,-->
+<!--                backgroundColor: 'rgba(75, 192, 192, 0.2)',-->
+<!--                borderColor: 'rgba(75, 192, 192, 1)',-->
+<!--                borderWidth: 2,-->
+<!--                fill: true,-->
+<!--            }]-->
+<!--        };-->
+
+<!--        const config = {-->
+<!--            type: 'radar',-->
+<!--            data: anthropometryData,-->
+<!--            options: {-->
+<!--                scales: {-->
+<!--                    r: {-->
+<!--                        angleLines: { display: true },-->
+<!--                        suggestedMin: 0,-->
+<!--                        suggestedMax: Math.ceil(maxValue / 10) * 10 // Округляем до ближайшего большего десятка-->
+<!--                    }-->
+<!--                },-->
+<!--                responsive: true,-->
+<!--                plugins: {-->
+<!--                    legend: { position: 'top' },-->
+<!--                    title: { display: true, text: 'Антропометрические данные' }-->
+<!--                }-->
+<!--            }-->
+<!--        };-->
+
+<!--        const anthropometryRadar = new Chart(-->
+<!--            document.getElementById('anthropometryRadar'),-->
+<!--            config-->
+<!--        );-->
+<!--    </script>-->
+
+
+
+{% if anthropometry %}
+       <div class="container bg-white rounded-lg p-6 shadow-lg  mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-center text-indigo-600">Заключение</h2>
+    <div class="p-4  rounded-lg mb-4 shadow-2xl border-4">
+        <p class="text-lg text-gray-700 mb-2">На основе  измерений было сделано следующее заключение:</p>
+
+        <div class="flex items-start mb-3">
+            <svg class="h-8 w-8 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v5H4a1 1 0 000 2h5v5a1 1 0 002 0v-5h5a1 1 0 000-2h-5V3a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            <div>
+                <h3 class="font-semibold">Рост</h3>
+                <p class="text-md text-gray-600">
+                    {% if anthropometry.height < 160 %}
+                        Ваш рост ниже нормы, что может указывать на генетические особенности.
+                    {% elif anthropometry.height > 190 %}
+                        Более высокий рост также может быть преимуществом в спортивных дисциплинах.
+                    {% else %}
+                        Ваш рост в пределах нормы ({{ anthropometry.height }} см), что положительно сказывается на здоровье.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-start mb-3">
+            <svg class="h-8 w-8 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 00-1 1v1.586L5.707 6.293A1 1 0 004 7v8a1 1 0 001 1h10a1 1 0 001-1V7a1 1 0 00-.293-.707L11 4.586V3a1 1 0 00-1-1z" /></svg>
+            <div>
+                <h3 class="font-semibold">Вес</h3>
+                <p class="text-md text-gray-600">
+                    {% if anthropometry.weight < 50 %}
+                        Ваш вес ниже рекомендуемой нормы. Рекомендуется проконсультироваться с врачом.
+                    {% elif anthropometry.weight > 90 %}
+                        Ваша масса тела выше нормы, что может повысить риск сердечно-сосудистых заболеваний.
+                    {% else %}
+                        Ваш вес ({{ anthropometry.weight }} кг) свидетельствует о хорошем физическом состоянии.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-start mb-3">
+            <svg class="h-8 w-8 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v2a1 1 0 01-1 1H3a1 1 0 000 2h1a1 1 0 011 1v2a1 1 0 001 1h1a1 1 0 011-1v-2a1 1 0 011-1h2a1 1 0 000-2h-2a1 1 0 01-1-1V5a1 1 0 00-1-1H6z" /></svg>
+            <div>
+                <h3 class="font-semibold">Объем талии</h3>
+                <p class="text-md text-gray-600">
+                    Объем талии — {{ anthropometry.waist_circumference }} см.
+                    {% if anthropometry.waist_circumference < 80 %}
+                        Это хороший показатель, который говорит о низком риске сердечно-сосудистых заболеваний.
+                    {% elif anthropometry.waist_circumference < 90 %}
+                        Рекомендуется следить за объемом талии для сохранения хорошего состояния.
+                    {% else %}
+                        Объем талии выше нормы, что может вызвать риск для здоровья.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-start mb-3">
+
+            <svg class="h-8 w-8 text-purple-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 00-1 1v4H5a1 1 0 000 2h3v4a1 1 0 002 0v-4h3a1 1 0 000-2h-3V3a1 1 0 00-1-1z" /></svg>
+            <div>
+                <h3 class="font-semibold">Сила рук</h3>
+                <p class="text-md text-gray-600">
+                    Сила рук: Левой {{ wrist_dynamometry.left_hand }} кг, Правой {{ wrist_dynamometry.right_hand }} кг.
+                    {% if wrist_dynamometry.left_hand < 30 or wrist_dynamometry.right_hand < 30 %}
+                        Ваша сила ниже нормы, что может потребовать внимания.
+                    {% else %}
+                        Ваши показатели силы рук в пределах нормы, что говорит о хорошей физической активности.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <p class="border-t pt-4 text-center text-gray-600">
+        Уделяйте внимание своему здоровью и регулярно проводите мониторинг физических данных!
+    </p>
+</div>
+ {% endif %}
+
+    </div>
+
+
+
+            </div>
+        </div>
+
+
+<!--<div class="flex flex-col sm:flex-row p-4">-->
+<!--    <div class="flex flex-col sm:w-1/3">-->
+<!--        &lt;!&ndash; Мои контакты &ndash;&gt;-->
+<!--        <div class="py-4 sm:order-none order-3">-->
+<!--            <h2 class="text-xl font-semibold text-purple-600">Мои контакты</h2>-->
+<!--            <div class="border-b-2 border-purple-600 my-3"></div>-->
+<!--            <div>-->
+<!--                <div class="flex items-center my-2">-->
+<!--                    <i class="fas fa-user mr-2 text-purple-500"></i>-->
+<!--                    <div class="ml-1 truncate">Имя: {{ student.name }}</div>-->
+<!--                </div>-->
+<!--                <div class="flex items-center my-2">-->
+<!--                    <i class="fas fa-envelope mr-2 text-purple-500"></i>-->
+<!--                    <div class="ml-1 truncate">Email: {{ student.email }}</div>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; Добавьте другие контакты, если нужно &ndash;&gt;-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="flex-1 sm:ml-4">-->
+<!--        &lt;!&ndash; Данные антропометрии &ndash;&gt;-->
+<!--        <div class="py-4">-->
+<!--            <h2 class="text-xl font-semibold text-purple-600">Антропометрические данные</h2>-->
+<!--            <div class="border-b-2 border-purple-600 my-3"></div>-->
+<!--            {% if anthropometry %}-->
+<!--                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Рост:</strong> {{ anthropometry.height }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Масса:</strong> {{ anthropometry.weight }} кг-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина стопы:</strong> {{ anthropometry.foot_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина голени:</strong> {{ anthropometry.shin_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Длина бедра:</strong> {{ anthropometry.thigh_length }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Размах рук:</strong> {{ anthropometry.arm_span }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+
+<!--                        <strong>Объем талии:</strong> {{ anthropometry.waist_circumference }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Объем бедер:</strong> {{ anthropometry.hip_circumference }} см-->
+<!--                    </div>-->
+<!--                    <div class="bg-white p-4 rounded shadow">-->
+<!--                        <strong>Окружность грудной клетки:</strong> {{ anthropometry.chest_circumference }} см-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            {% else %}-->
+<!--                <div class="text-red-500">Данные антропометрии не найдены.</div>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Данные динамометрии запястья &ndash;&gt;-->
+<!--        <div class="py-4">-->
+<!--            <h2 class="text-xl font-semibold text-purple-600">Динамометрия запястья</h2>-->
+<!--            <div class="border-b-2 border-purple-600 my-3"></div>-->
+<!--            {% if wrist_dynamometry %}-->
+<!--                <div class="bg-white p-4 rounded shadow">-->
+<!--                    &lt;!&ndash; Предполагается, что в вашем WristDynamometry есть подобные атрибуты &ndash;&gt;-->
+<!--                    <strong>Сила левой руки:</strong> {{ wrist_dynamometry.left_hand_strength }} кг-->
+<!--                </div>-->
+<!--                <div class="bg-white p-4 rounded shadow">-->
+<!--                    <strong>Сила правой руки:</strong> {{ wrist_dynamometry.right_hand_strength }} кг-->
+<!--                </div>-->
+<!--                &lt;!&ndash; Добавьте другие поля, если нужно &ndash;&gt;-->
+<!--            {% else %}-->
+<!--                <div class="text-red-500">Данные динамометрии не найдены.</div>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+
+
+
+{% endblock %}

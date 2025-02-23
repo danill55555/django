@@ -1,0 +1,56 @@
+{% extends 'SportViolations/base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="py-16">
+<div class="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
+  <div class="w-full p-8 lg:w-1/2 flex flex-col justify-between">
+    <div>
+      <h2 class="text-3xl font-bold text-indigo-500 text-center">Регистрация</h2>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="border-2 w-full"></span>
+      </div>
+      <form method="POST">
+                        {% csrf_token %}
+          <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Имя</label>
+                            <input name="first_name" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="text" required />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Фамилия</label>
+                            <input name="last_name" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="text" required />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Отчество</label>
+                            <input name="patronymic" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="text" required />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Электронная почта</label>
+                            <input name="email" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="email" required />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Дата рождения</label>
+                            <input name="birth_date" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="date" required />
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-md font-bold mb-2">Пароль</label>
+                            <input name="password" class="bg-white text-gray-700 focus:outline-none focus:shadow-outline border border-indigo-400 rounded py-2 px-4 block w-full appearance-none" type="password" required />
+                        </div>
+    </div>
+    <div>
+      <button type="submit" class="bg-indigo-500 text-white text-lg font-bold py-2 mt-4 px-4 w-full rounded hover:bg-indigo-600">Зарегистрироваться</button>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="border-b w-1/5 md:w-1/4"></span>
+        <a href="{% url 'login' %}" class="text-md text-gray-500 uppercase">Есть Аккаунт?</a>
+        <span class="border-b w-1/5 md:w-1/4"></span>
+      </div>
+    </div>
+  </div>
+        </form>
+  <div class="hidden lg:block w-2/3 bg-cover relative">
+    <img src="{% static './img/gymnastka-s-myachom1-1760x1160.jpg' %}" alt="" class="object-cover w-full h-full">
+  </div>
+</div>
+</div>
+{% endblock %}

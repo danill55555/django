@@ -1,0 +1,128 @@
+{% extends 'SportViolations/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="mx-auto container px-4 py-8 sm:px-8">
+  <div class="flex items-center justify-between pb-6">
+    <div>
+      <h2 class="font-semibold text-gray-700">Список тренеров</h2>
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="ml-10 space-x-8 lg:ml-40">
+           <a href="{% url 'create_trainer' %}">
+                        <button class=" items-center justify-center my-2 lg:my-0 gap-2 rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fas fa-plus mr-2"></i>
+                            Добавить тренера
+                        </button>
+                    </a>
+      </div>
+    </div>
+  </div>
+  <div class="overflow-y-hidden rounded-lg border">
+<div class="overflow-x-auto">
+    <table class="w-full">
+        <thead>
+            <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
+                <th class="px-5 py-3">ФИО</th>
+                <th class="px-5 py-3">Почта</th>
+                <th class="px-5 py-3">Возраст</th>
+                <th class="px-5 py-3">Количество спортсменов</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-500">
+            {% for trainer in trainers %}
+            <tr>
+                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                    <p class="whitespace-no-wrap">{{ trainer.surname }} {{ trainer.patronymic }}</p>
+                </td>
+                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                    <p class="whitespace-no-wrap">{{ trainer.user.email }}</p>
+                </td>
+                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                    <p class="whitespace-no-wrap">{{ trainer.age }}</p>
+                </td>
+                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                    <span class="rounded-full bg-green-200 px-3 py-1 text-xs font-semibold text-green-900">{{ trainer.athlete_count }}</span>
+                </td>
+                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <a href="" class="text-indigo-600 hover:text-indigo-900">
+                <i class="fas fa-eye"></i>
+            </a>
+            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">
+                <i class="fas fa-trash"></i>
+            </a>
+        </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="border-b border-gray-200 bg-white px-5 py-5 text-sm text-center">Нет тренеров</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+    </table>
+</div>
+
+
+    <div class="flex flex-col items-center border-t bg-white px-5 py-5 sm:flex-row sm:justify-between">
+      <span class="text-xs text-gray-600 sm:text-sm"> Showing 1 to 5 of 12 Entries </span>
+      <div class="mt-2 inline-flex sm:mt-0">
+        <button class="mr-2 h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100">Prev</button>
+        <button class="h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mx-auto mt-10">
+<section class="mb-2 border bg-neutral-100 p-4 rounded-lg max-w-full bg-neutral-100">
+    <div class="mx-auto">
+        <div class="card md:flex max-w-lg">
+            <div class="w-20 h-20 mx-auto mb-6 md:mr-6 flex-shrink-0">
+                <img class="object-cover rounded-full" src="https://tailwindflex.com/public/images/user.png">
+            </div>
+            <div class="flex-grow text-center md:text-left">
+                <p class="font-bold">Senior Developer</p>
+                <h3 class="text-xl heading">John Doe</h3>
+                <p class="mt-2 mb-3">John is a Senior Developer, mainly works in backend technologies.</p>
+                <div>
+                    <span class="bg-gray-200 border px-3 py-1.5 rounded-lg text-sm">Discrete Math</span>
+                    <span class="bg-gray-200 border px-3 py-1.5 rounded-lg text-sm">Topology</span>
+                    <span class="bg-gray-200 border px-3 py-1.5 rounded-lg text-sm">Neural Nets</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+<div class="container mx-auto mt-10">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-8">Список тренеров</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for trainer in trainers %}
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h5 class="text-xl font-semibold text-purple-600">{{ trainer.user.username }}</h5>
+                <p class="mt-2 text-gray-600">
+                    <strong>Фамилия:</strong> {{ trainer.surname }}<br>
+                    <strong>Имя:</strong> {{ trainer.user.first_name }}<br>
+                    <strong>Отчество:</strong> {{ trainer.patronymic }}<br>
+                    <strong>Возраст:</strong> {{ trainer.age }} лет<br>
+                    <strong>Дата рождения:</strong> {{ trainer.date_of_birth|date:"d.m.Y" }}
+                </p>
+
+            </div>
+        {% empty %}
+            <div class="col-span-1 md:col-span-3 text-center text-gray-500">Нет доступных тренеров.</div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

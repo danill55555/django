@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Талант и грация</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="{% static './img/favicon.jpg' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @media (max-width: 300px) {
+            .error-message {
+                display: flex; /* Используем flexbox для центрирования содержимого */
+                flex-direction: column; /* Вертикальная ориентация */
+                justify-content: center; /* Центрируем по вертикали */
+                align-items: center; /* Центрируем по горизонтали */
+                height: 100vh; /* Занимаем всю высоту экрана */
+                width: 100%; /* Занимаем всю ширину экрана */
+                position: absolute; /* Чтобы разместить элемент поверх других */
+                top: 0; /* Начнем с верхней части экрана */
+                left: 0; /* Начнем с левой части экрана */
+                background-color: rgba(255, 255, 255, 0.9); /* Полупрозрачный фон */
+                z-index: 10; /* Устанавливаем выше других элементов */
+            }
+
+            .main-content,footer,header {
+                display: none; /* Скрываем основной контент при ширине меньше 300px */
+            }
+        }
+
+        @media (min-width: 301px) {
+            .error-message {
+                display: none; /* Скрываем сообщение об ошибке при ширине больше 300px */
+            }
+            .main-content,footer,header {
+                display: block; /* Показываем основной контент при ширине больше 300px */
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-full">
+    <header class="lg:px-7 bg-indigo-600 py-4 shadow-md">
+       <div class="container mx-auto px-4 md:flex flex-col md:flex-row md:justify-between items-center">
+            <div class="text-center my-2">
+                <a href="{% url 'home' %}" class="text-white font-bold text-3xl md:text-2xl">Талант и грация</a>
+            </div>
+            <div class="text-center my-2">
+                {% if user.is_authenticated %}
+                    <div class="py-2 text-lg">
+                        <a href="{% url 'profile' %}" class="text-white hover:text-indigo-300 mr-4">
+                            <i class="fas fa-user ml-2"></i> Профиль
+                        </a>
+                        <a href="{% url 'logout' %}" class="text-white hover:text-indigo-300">
+                            <i class="fas fa-sign-out-alt ml-2"></i> Выход
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="">
+                        <a href="{% url 'login' %}" class="text-white hover:text-indigo-300">
+                            <i class="fas fa-sign-in-alt ml-2"></i> Войти
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Ошибочное сообщение: будет показываться при ширине до 300px -->
+        <div class="error-message hidden">
+            <div class="bg-white rounded-lg p-8 shadow-lg">
+                <h1 class="text-4xl font-bold text-red-600 text-center mb-4">Error 404</h1>
+                <p class="text-xl text-gray-800 text-center">Ширина экрана слишком малaя</p>
+                <p class="text-center mt-6">
+                    <a href="{% url 'home' %}" class="text-indigo-600 hover:underline">Вернуться на главную</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Основной контент: будет показываться при ширине больше 300px -->
+        <div class="main-content hidden">
+            {% block content %}
+            <!-- Ваш основной контент здесь -->
+            {% endblock %}
+
+        </div>
+    </main>
+
+    <footer class="bg-indigo-600 text-white py-6 mt-auto">
+        <div class="container mx-auto text-center space-y-4 items-center">
+            <p>&copy; 2025 Талант и грация. Все права защищены.</p>
+            <div class="lg:flex mx-auto">
+                <div class="lg:flex mx-auto space-y-2 lg:space-y-0">
+                    <p class="text-white hover:text-indigo-300 mr-4">Политика конфиденциальности</p>
+                    <p class="text-white hover:text-indigo-300">Условия использования</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+

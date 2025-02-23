@@ -1,0 +1,124 @@
+{% extends 'SportViolations/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="content-wrapper flex justify-center items-center">
+    {% if success_message %}
+    <div id="modals" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-96 relative">
+        <a href="{% url 'profile' %}" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-150 ease-in-out">
+            <i class="fas fa-times"></i>
+        </a>
+        <h2 class="text-2xl mb-4 text-center font-semibold text-green-500">Успешно!</h2>
+        <p class="text-gray-700 text-center">Анкета успешно создана.</p>
+<div class="flex justify-center mt-6">
+    <a href="{% url 'assessment' student.survey_id %}" class="bg-indigo-600 text-white rounded-md px-4 py-2 hover:bg-indigo-700 transition duration-150 ease-in-out">
+        <i class="fas fa-arrow-right mr-2"></i>Перейти к обследованию
+    </a>
+</div>
+
+    </div>
+</div>
+{% endif %}
+
+    <div class="my-7 bg-white rounded-lg shadow-lg p-6  border-2">
+    <h2 class="text-3xl  mb-4 text-center font-semibold text-indigo-600">Анамнез</h2>
+
+        <form id="surveyForm" method="post" action="{% url 'student_form' %}">
+    {% csrf_token %}
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 my-2 py-2">
+            <div class="mb-2">
+                <label class="flex items-center">
+                    <i class="fas fa-user mr-2 text-indigo-600"></i>
+                    <span>Имя</span>
+                </label>
+                <input type="text" id="name" name="name" required class="mt-1 py-2 border border-gray-300 rounded-md p-3 w-full focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Имя">
+            </div>
+            <div class="mb-2">
+                <label class="flex items-center">
+                    <i class="fas fa-user mr-2 text-indigo-600"></i>
+                    <span>Фамилия</span>
+                </label>
+                <input type="text" id="surname" name="surname" required class="mt-1 py-2 border border-gray-300 rounded-md p-3 w-full focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Фамилия">
+            </div>
+            <div>
+                <label class="flex items-center">
+                    <i class="fas fa-user mr-2 text-indigo-600"></i>
+                    <span>Отчество</span>
+                </label>
+                <input type="text" id="patronymic" name="patronymic" required class="mt-1 py-2 border border-gray-300 rounded-md p-3 w-full focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Отчество">
+            </div>
+            <div>
+                <label class="flex items-center">
+                    <i class="fas fa-calendar mr-2 text-indigo-600"></i>
+                    <span>Дата рождения</span>
+                </label>
+                <input type="date" id="date" name="date_of_birth" required class="mt-1 border py-2 border-gray-300 rounded-md p-3 w-full focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+            </div>
+
+            <div>
+                <label class="flex items-center">
+                    <i class="fas fa-comment-dots mr-2 text-indigo-600"></i>
+                    <span>Стаж занятий спортом</span>
+                </label>
+                <input id="experience" name="experience" type="number"  required class="mt-1 h-14 text-black rounded-md p-3 w-full bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Стаж занятий спортом (при наличии)"></input>
+            </div>
+            <div>
+                <label class="flex items-center">
+                    <i class="fas fa-medal mr-2 text-indigo-600"></i>
+                    <span>Спортивная квалификация</span>
+                </label>
+                <textarea id="qualification" name="qualification" rows="2" required class="mt-1 h-14 text-black rounded-md p-3 w-full bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Спортивная квалификация (при наличии)"></textarea>
+            </div>
+            <div class=" col-span-1 md:col-span-2">
+                <label class="flex items-center">
+                    <i class="fas fa-heartbeat mr-2 text-indigo-600"></i>
+                    <span>Хронические заболевания</span>
+                </label>
+                <textarea id="chronic_conditions" name="chronic_conditions" rows="2" required class="mt-1 h-14  text-black rounded-md p-3 w-full bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Наличие хронических заболеваний"></textarea>
+            </div>
+            <div class="">
+                <label class="flex items-center">
+                    <i class="fas fa-chart-line mr-2 text-indigo-600"></i>
+                    <span>Рост мамы</span>
+                </label>
+                <input id="mother_height" name="mother_height" type="number" required class="mt-1 text-black rounded-md p-3 w-full h-12 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Рост мамы">
+            </div>
+               <div class=" ">
+                <label class="flex items-center">
+                    <i class="fas fa-chart-line mr-2 text-indigo-600"></i>
+                    <span>Рост папы</span>
+                </label>
+                <input id="dad_height" name="dad_height" type="number" required class="mt-1 text-black rounded-md p-3 w-full h-12 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Рост папы">
+            </div>
+            <div class="">
+                <label class="flex items-center">
+                    <i class="fas fa-futbol mr-2 text-indigo-600"></i>
+                    <span>Вид спорта мамы</span>
+                </label>
+                <textarea id="mother_sport" name="mother_sport" rows="2" required class="mt-1 text-black rounded-md p-3 w-full bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Вид спорта мамы (если занимались каким-либо видом спорта)"></textarea>
+            </div>
+
+            <div class=" ">
+                <label class="flex items-center">
+                    <i class="fas fa-futbol mr-2 text-indigo-600"></i>
+                    <span>Вид спорта папы</span>
+                </label>
+                <textarea id="dad_sport" name="dad_sport" rows="2" required class="mt-1 text-black rounded-md p-3 w-full bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out placeholder-gray-400" placeholder="Вид спорта папы (если занимались каким-либо видом спорта)"></textarea>
+            </div>
+
+            <p class="text-red-500">*Заполните все данные для успешного создания анкеты</p>
+        </div>
+        <div>
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-150 ease-in-out">
+                Отправить
+            </button>
+        </div>
+    </form>
+</div>
+
+</div>
+
+{% endblock %}

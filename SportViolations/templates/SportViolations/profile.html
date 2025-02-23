@@ -1,0 +1,940 @@
+{% extends 'SportViolations/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список Спортсменов</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<!--<div class="container mx-auto my-5">-->
+<!--    <h1 class="text-2xl font-bold">Профиль пользователя</h1>-->
+<!-- {% if is_admin %}-->
+<!--            <p>Вы являетесь Администратором. У вас есть доступ ко всем функциям системы.</p>-->
+<!--        {% else %}-->
+<!--            <p>Вы являетесь Тренером. Вам доступны функции управления студентами и их анкетами.</p>-->
+<!--        {% endif %}-->
+
+<!--    &lt;!&ndash; Дополнительные элементы страницы, например, список студентов &ndash;&gt;-->
+<!--    <div>-->
+<!--        <h2>Список студентов</h2>-->
+<!--        <ul>-->
+<!--            {% for student in page_obj %}-->
+<!--                <li>{{ student.name }} {{ student.surname }}</li>-->
+<!--            {% empty %}-->
+<!--                <li>Нет студентов для отображения.</li>-->
+<!--            {% endfor %}-->
+<!--        </ul>-->
+<!--        &lt;!&ndash; Здесь вы можете добавить элементы пагинации для page_obj &ndash;&gt;-->
+<!--    </div>-->
+<!--</div>-->
+
+ <body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <div class="w-full h-full mx-auto rounded-xl bg-white shadow-lg p-6">
+            <div class="lg:flex space-y-4 lg:space-y-0 items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-indigo-600">Список Спортсменов</h3>
+                    <span class="block w-full h-1 bg-indigo-300 rounded-full mt-2"></span>
+                </div>
+                <div class="lg:flex  lg:gap-2 shrink-0 ">
+                            {% if is_admin %}
+<!--                    <a href="{% url 'trainer_list' %}">-->
+<!--                               <button class=" items-center justify-center my-2 lg:my-0 gap-2 rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">-->
+<!--                            <i class="fas fa-plus mr-2"></i>-->
+<!--                            Список тренеров-->
+<!--                        </button>-->
+<!--                        </a>-->
+                          <a href="{% url 'create_trainer' %}">
+                        <button class=" items-center justify-center my-2 lg:my-0 gap-2 rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fas fa-plus mr-2"></i>
+                            Добавить тренера
+                        </button>
+                    </a>
+
+                    {% else %}
+                    <a href="{% url 'student_form' %}">
+                        <button class=" items-center justify-center my-2 lg:my-0 gap-2 rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <i class="fas fa-plus mr-2"></i>
+                            Создать анкету
+                        </button>
+                    </a>
+                    {% endif %}
+             <!-- Кнопка экспортирования -->
+<button id="export-button" class="rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <i class="fas fa-file-export mr-2"></i>Экспортировать
+</button>
+
+<!-- Модальное окно подтверждения экспорта -->
+<div id="export-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 w-1/3">
+        <h2 class="text-lg font-medium">Подтверждение экспорта</h2>
+        <p class="mt-2 text-gray-600">Вы точно хотите экспортировать данные в формате Excel?</p>
+        <div class="mt-4 flex justify-end">
+            <button id="cancel-button" class="mr-2 py-1 px-3 text-sm text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                Нет
+            </button>
+            <button id="confirm-button" class="py-1 px-3 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+                Да
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно успешного сообщения -->
+<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 w-1/3 text-center">
+        <h2 class="text-lg font-medium">Успешно!</h2>
+        <p class="mt-2 text-gray-600">Данные успешно экспортированы в формате Excel.</p>
+        <button id="close-success-modal" class="mt-4 py-2 px-4 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700">
+            Закрыть
+        </button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('export-button').addEventListener('click', function() {
+        // Показываем модальное окно
+        document.getElementById('export-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-button').addEventListener('click', function() {
+        // Закрываем модальное окно подтверждения
+        document.getElementById('export-modal').classList.add('hidden');
+    });
+
+    document.getElementById('confirm-button').addEventListener('click', function() {
+        // Скрываем модальное окно подтверждения
+        document.getElementById('export-modal').classList.add('hidden');
+
+        // Здесь получаем URL для экспорта
+        const exportUrl = "{% url 'export_to_excel' %}?name_filter={{ name_filter }}&date_filter={{ date_filter }}&filter_active={{ filter_active }}";
+
+        // Переход к URL для экспорта
+        window.location.href = exportUrl;
+
+        // Показываем модальное окно успешного экспорта
+        document.getElementById('success-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('close-success-modal').addEventListener('click', function() {
+        // Закрываем модальное окно успешного сообщения
+        document.getElementById('success-modal').classList.add('hidden');
+    });
+</script>
+                </div>
+            </div>
+
+
+<form method="GET">
+    <div class="flex flex-col gap-4 mb-6">
+
+        <div class="lg:flex lg:space-x-4 space-y-2 lg:space-y-0 mt-4">
+<!-- Поле для поиска по ФИО -->
+<div class="relative flex-1">
+    <input type="text"
+        id="name_filter"
+        name="name_filter"
+        placeholder="Поиск по ФИО"
+        class="w-full bg-white border-2 h-11 border-yellow-500 rounded-md py-2 px-4 pr-10 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-xl"
+        value="{{ name_filter }}"
+        oninput="handleInput(this)"> <!-- Вызов функции обработки ввода -->
+
+    <!-- Иконка поиска -->
+    <i class="fas fa-search absolute inset-y-0 right-0 my-3 pr-3 text-yellow-500"></i>
+
+    <!-- Иконка очистки -->
+    <i class="fas fa-times absolute inset-y-0 right-10 text-lg my-3 cursor-pointer text-yellow-500 hidden" id="clear_icon" onclick="clearInput()"></i>
+
+    <!-- Уведомление об ошибке -->
+    <div id="name_error" class="hidden text-red-500 text-sm mt-1">
+        <i class="fas fa-exclamation-circle mr-1"></i>
+        Пожалуйста, напишите на русском языке.
+    </div>
+</div>
+
+<script>
+    function handleInput(input) {
+        const clearIcon = document.getElementById('clear_icon');
+        if (input.value.length > 0) {
+            clearIcon.classList.remove('hidden'); // Показывать иконку очистки
+        } else {
+            clearIcon.classList.add('hidden'); // Скрывать иконку очистки, если поле пустое
+        }
+
+        // Ваш код для обработки ввода (например, показ/скрытие ошибки)
+    }
+
+    function clearInput() {
+        const input = document.getElementById('name_filter');
+        input.value = ''; // Очистка поля ввода
+        input.focus(); // Фокус на поле ввода
+        document.getElementById('clear_icon').classList.add('hidden'); // Скрыть иконку очистки
+    }
+</script>
+
+<style>
+    /* Стили для очистки иконки, если нужно */
+    .cursor-pointer:hover {
+        color: darkorange; /* Изменение цвета иконки при наведении */
+    }
+</style>
+
+<script>
+    function handleInput(input) {
+        const errorDiv = document.getElementById('name_error');
+        const value = input.value;
+
+        // Проверяем, есть ли английские буквы
+        if (/^[A-Za-z]*$/.test(value)) {
+            // Если все символы английские, показываем сообщение об ошибке
+            errorDiv.classList.remove('hidden');
+        } else {
+            // Убираем сообщение об ошибке, если ввели допустимые символы
+            errorDiv.classList.add('hidden');
+        }
+
+        // Оставляем только русские буквы и пробелы
+        input.value = value.replace(/[^А-Яа-яЁё\s]/g, '');
+    }
+</script>
+
+        <!-- Поле выбора года -->
+<div class="relative flex-1">
+    <select name="year_filter" class="w-full bg-white border-2 h-11 border-purple-500 rounded-md py-2 px-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-xl">
+        <option value="">Выберите год</option>  <!-- Вариант по умолчанию -->
+        {% for year in registration_years %}
+            <option value="{{ year }}" {% if year == year_filter %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+    </select>
+    <i class="fas fa-calendar-alt absolute inset-y-0 my-3 right-0 flex items-center pr-3 text-green-500"></i>
+</div>
+    <!-- Поле для даты -->
+<div class="relative flex-1 bottom-6">
+   <label for="date_filter"
+           class=" left-4  text-gray-500 text-sm transform scale-75 transition-all duration-200 pointer-events-none"
+           id="date_label">Дата рождения спортсмена</label>
+    <input type="date" id="date_filter" name="date_filter"
+        class="w-full bg-white border-2 h-11 border-blue-500 rounded-md py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-xl"
+        value="{{ date_filter }}"
+        onchange="validateDate(this)"
+        oninput="toggleDateFormat(this)"> <!-- Вызов функции проверки даты -->
+
+    <div id="date_error" class="hidden text-red-500 text-sm mt-1">
+        <i class="fas fa-exclamation-circle mr-1"></i>
+        Пожалуйста, выберите корректную дату (год не должен быть 0000).
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function validateDate(input) {
+        const errorDiv = document.getElementById('date_error');
+
+        // Получаем значение даты
+        const value = input.value;
+
+        // Проверяем, является ли год 0000
+        if (value && new Date(value).getFullYear() === 0) {
+            // Если год 0000, показываем сообщение об ошибке
+            errorDiv.classList.remove('hidden');
+        } else {
+            // Убираем сообщение об ошибке, если дата корректная
+            errorDiv.classList.add('hidden');
+        }
+    }
+</script>
+
+        <!-- Поле для поиска по стажу занятий -->
+<!-- Поле для поиска по стажу занятий -->
+<div class="relative flex-1">
+    <input type="text"
+        id="experience_filter"
+        name="experience_filter"
+        placeholder="Поиск по стажу занятий"
+        class="w-full bg-white border-2 h-11 border-pink-500 rounded-md py-2 px-4 pr-10 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-xl"
+        value="{{ experience_filter }}"
+        maxlength="2" oninput="this.value = this.value.replace( /[^0-9]/g, '');"> <!-- Установили maxlength и фильтрация ввода -->
+
+    <i class="fas fa-search absolute inset-y-0 my-3 right-0 flex items-center pr-3 text-pink-500"></i>
+</div>
+            <script>
+    document.getElementById('experience_filter').addEventListener('input', function (e) {
+        // Получаем текущее значение
+        let value = this.value;
+
+        // Удаляем все несоответствующие символы
+        value = value.replace(/[^0-9]/g, '');
+
+        // Проверяем длину и ограничиваем до 90
+        if (value.length > 2) {
+            value = value.slice(0, 2); // Обрезаем до двух символов
+        }
+        if (parseInt(value) > 90) {
+            value = 90; // Ограничиваем до 90
+        }
+
+        // Устанавливаем новое значение
+        this.value = value;
+    });
+</script>
+
+            {% if is_admin %}
+          <div class="relative flex-1">
+    <select id="trainer_filter" name="trainer_filter" class="w-full bg-white border-2 h-11 border-purple-500 rounded-md py-2 px-4 pr-10 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-xl" onchange="updateTrainerName(this)">
+        <option value="" {% if not trainer_filter %}selected{% endif %}>Выберите тренера</option>
+        {% for trainer in accounts %}
+            <option value="{{ trainer.user.username }}" {% if trainer_filter == trainer.user.username %}selected{% endif %}>
+                {{ trainer.surname }} {{ trainer.patronymic }} ({{ trainer.user.username }})
+            </option>
+        {% endfor %}
+    </select>
+    <i class="fas fa-search absolute inset-y-0 my-3 right-0 flex items-center pr-3 text-purple-500"></i>
+
+    <!-- Уведомление об ошибке -->
+    <div id="trainer_error" class="hidden text-red-500 text-sm mt-1">
+        <i class="fas fa-exclamation-circle mr-1"></i>
+        Пожалуйста, выберите тренера.
+    </div>
+</div>
+
+
+            {% endif %}
+        </div>
+
+        <button id="filter_button_main" type="submit" class="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <i class="fas fa-filter mr-2"></i>
+            Фильтровать
+        </button>
+
+        <!-- Блок для вывода количества найденных записей -->
+{% if result_count is not none %}
+<div class="flex items-center p-4 bg-blue-100 border border-blue-300 rounded-md shadow-md">
+    <i class="fas fa-check-circle text-blue-500 mr-2"></i>
+    <span class="text-sm text-gray-700">
+        Найдено записей: <strong class="text-gray-800">{{ result_count }}</strong>
+    </span>
+</div>
+{% endif %}
+
+    </div>
+</form>
+
+
+<div class="trainer-display hidden">
+    <h2 id="selected_trainer_name" class="text-lg font-bold"></h2>
+</div>
+
+            <div class="overflow-x-auto space-y-5 rounded-lg shadow-lg  ">
+{% if grouped_students %}
+   {% for registration_date, students_for_date in grouped_students %}
+                  <h2 class="text-md font-semibold my-2">
+            Дата: {{ registration_date|date:"d" }}  {{ registration_date|date:"F" }} {{ registration_date|date:"Y" }}
+        </h2>
+
+        <table class="w-full divide-y divide-gray-200  mb-8 space-y-4 my-2 order-gray-800 border-4">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ФИО спортсмена</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата рождения</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Стаж занятий</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тренер</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Паспортичка</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тестирование</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200 border-gray-500">
+                {% if students_for_date %}
+                    {% for student in students_for_date %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ student.name }} {{ student.surname }} {{ student.patronymic }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ student.date_of_birth|date:"d.m.Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ student.experience }} лет</td>
+
+                                    <td class="px-2 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+                <div class="ml-4 text-md">
+                    {% if student.trainer %}
+                    <p>{{ student.trainer.surname }} {{ student.trainer.patronymic }} {{ student.trainer.user.username }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                {% if student.is_created %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">
+                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+                </svg>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                    <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />
+                </svg>
+                {% endif %}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            {% if student.anthropometry.first.is_created %}
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">
+
+                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            {% else %}
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                    <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            {% endif %}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <a href="{% url 'personal_account' student.survey_id %}" class="text-indigo-600 hover:text-indigo-900">
+                <i class="fas fa-eye"></i>
+            </a>
+            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">
+                <i class="fas fa-trash"></i>
+            </a>
+        </td>
+
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-lg text-gray-500">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                                Ничего не найдено по вашему запросу.
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    {% empty %}
+        <div class="text-center py-4">
+            <div class="text-lg text-gray-500">
+
+                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                Ничего не найдено по вашему запросу.
+            </div>
+        </div>
+
+</div>{% endfor %}
+{% else %}
+    {% if is_admin %}
+        <p>Тренер(ы) пока не создали ни одной анкеты.</p>
+    {% else %}
+        <p>У вас пока нет анкет. Пожалуйста, создайте новую анкету для спортсменов.</p>
+    {% endif %}
+{% endif %}
+
+<!--            <div class="overflow-x-auto rounded-lg shadow-lg  border-4">-->
+
+<!--                 <h2 class="text-xl font-semibold text-center my-4">  Год: {{ registration_year }} <br>-->
+<!--        Месяц: {{ registration_month }} <br>-->
+<!--        Дата: {{ registration_day }}</h2>-->
+<!--                <table class="w-full divide-y divide-gray-200">-->
+<!--                   <thead class="bg-gray-50">-->
+<!--    <tr>-->
+<!--        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--            <i class="fas fa-user text-blue-500 hover:text-blue-700 mr-2 transition-colors duration-200"></i> ФИО-->
+<!--        </th>-->
+<!--        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--            <i class="fas fa-calendar text-green-500 hover:text-green-700 mr-2 transition-colors duration-200"></i> Дата рождения-->
+<!--        </th>-->
+<!--        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--            <i class="fas fa-chalkboard-teacher text-yellow-500 hover:text-yellow-700 mr-2 transition-colors duration-200"></i> Стаж занятий-->
+<!--        </th>-->
+<!--        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--            <i class="fas fa-user-tie text-purple-500 hover:text-purple-700 mr-2 transition-colors duration-200"></i> Тренер-->
+<!--        </th>-->
+<!--        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--            <i class="fas fa-id-card text-red-500 hover:text-red-700 mr-2 transition-colors duration-200"></i> Паспортичка-->
+<!--        </th>-->
+<!--<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+<!--    <i class="fas fa-vote-yea text-purple-500 hover:text-purple-700 mr-2 transition-colors duration-200"></i> Тестирование-->
+<!--</th>-->
+<!--    </tr>-->
+<!--</thead>-->
+<!--                  {% if has_results %}-->
+<!--<tbody class="bg-white divide-y divide-gray-200">-->
+<!--    {% for student in page_obj %}-->
+<!--    <tr>-->
+<!--        <td class="px-2 py-4 whitespace-nowrap">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="ml-4">-->
+<!--                    <div class="font-medium text-gray-900 text-md">-->
+<!--                        {{ student.name }} {{ student.surname }} {{ student.patronymic }}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </td>-->
+<!--        <td class="px-2 py-4 whitespace-nowrap">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="ml-4">-->
+<!--                    <div class="text-md font-medium text-gray-900">-->
+<!--                        {{ student.date_of_birth }}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </td>-->
+<!--        <td class="px-2 py-4 whitespace-nowrap">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="ml-4">-->
+<!--                    <div class="text-md font-medium text-gray-900">-->
+<!--                        {{ student.qualification }} лет-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </td>-->
+<!--        <td class="px-2 py-4 whitespace-nowrap">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="ml-4 text-md">-->
+<!--                    {% if student.trainer %}-->
+<!--                    <p>{{ student.trainer.surname }} {{ student.trainer.patronymic }} {{ student.trainer.user.username }}</p>-->
+<!--                    {% endif %}-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </td>-->
+<!--        <td class="px-6 py-4 whitespace-nowrap">-->
+<!--            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">-->
+<!--                {% if student.is_created %}-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">-->
+<!--                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />-->
+<!--                </svg>-->
+<!--                {% else %}-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">-->
+<!--                    <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />-->
+<!--                </svg>-->
+<!--                {% endif %}-->
+<!--            </span>-->
+<!--        </td>-->
+<!--        <td class="px-6 py-4 whitespace-nowrap">-->
+<!--            {% if student.anthropometry.first.is_created %}-->
+<!--            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-blue-800">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">-->
+
+<!--                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />-->
+<!--                </svg>-->
+<!--            </span>-->
+<!--            {% else %}-->
+<!--            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-blue-800">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">-->
+<!--                    <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />-->
+<!--                </svg>-->
+<!--            </span>-->
+<!--            {% endif %}-->
+<!--        </td>-->
+<!--        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">-->
+<!--            <a href="{% url 'personal_account' student.survey_id %}" class="text-indigo-600 hover:text-indigo-900">-->
+<!--                <i class="fas fa-eye"></i>-->
+<!--            </a>-->
+<!--            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">-->
+<!--                <i class="fas fa-edit"></i>-->
+<!--            </a>-->
+<!--            <a href="" class="text-indigo-600 hover:text-indigo-900 ml-3">-->
+<!--                <i class="fas fa-trash"></i>-->
+<!--            </a>-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--    {% endfor %}-->
+<!--</tbody>-->
+<!--{% else %}-->
+<!--                    <tr>-->
+<!--    <td colspan="8" class="text-center py-4">-->
+<!--        <div class="text-lg text-gray-500">-->
+<!--            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>-->
+<!--            Ничего не найдено по вашему запросу.-->
+<!--        </div>-->
+<!--    </td>-->
+<!--</tr>-->
+<!--                    {% endif %}-->
+
+
+
+<!--                </table>-->
+
+<!--            </div>-->
+             <div class="flex justify-center mt-6">
+  <nav aria-label="Page navigation">
+    <ul class="inline-flex -space-x-px">
+      {% if page_obj.has_previous %}
+      <li>
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+          Назад
+        </a>
+      </li>
+      {% endif %}
+
+      {% for page_num in page_obj.paginator.page_range %}
+      <li>
+        <a href="?page={{ page_num }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white {% if page_num == page_obj.number %}bg-gray-200 dark:bg-gray-700{% endif %}">
+          {{ page_num }}
+        </a>
+      </li>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li>
+        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+          Следующая
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+<script>
+    const filterButton = document.getElementById('filter_button');
+    const filterButtonMain = document.getElementById('filter_button_main');
+    let isFilterActive = false;
+
+    filterButton.addEventListener('click', () => {
+        if (!isFilterActive) {
+            filterButton.classList.add('bg-green-500', 'text-white');
+            filterButton.querySelector('i').classList.add('text-white');
+            isFilterActive = true;
+        } else {
+            filterButton.classList.remove('bg-green-500', 'text-white');
+            filterButton.querySelector('i').classList.remove('text-white');
+            isFilterActive = false;
+        }
+    });
+
+
+    filterButtonMain.addEventListener('click', () => {
+        const nameFilter = document.getElementById('name_filter').value;
+        const dateFilter = document.getElementById('date_filter').value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('name_filter', nameFilter);
+        url.searchParams.set('date_filter', dateFilter);
+        url.searchParams.set('filter_active', isFilterActive);
+        window.location.href = url.toString();
+    });
+</script>
+
+<!-- Подключите Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Список спортсменов</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" />-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>-->
+<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div class="flex flex-col h-screen bg-indigo-100">-->
+<!--    <div class="flex-1 flex">-->
+<!--        <div class="p-2 bg-white w-60 flex flex-col hidden md:flex border shadow-md" id="sideNav">-->
+<!--  <div class="flex flex-col items-center justify-center mt-4 ">-->
+<!--    <div class="rounded-full w-28 h-28 bg-gradient-to-r from-blue-400 to-blue-300 flex items-center justify-center">-->
+<!--       {% if student.photo %}-->
+<!--    <img src="{{ student.photo.url }}" alt="{{ student.name }} {{ student.surname }}" class="relative inline-block  !rounded-full object-cover object-center" />-->
+<!--  {% else %}-->
+<!--    <img src="{% static 'img/default_img.jpg' %}" alt="{{ student.name }} {{ student.surname }}" class="relative inline-block !rounded-full object-cover object-center" />-->
+<!--  {% endif %}-->
+<!--    </div>-->
+<!--    <h3 class="text-gray-800 font-semibold text-lg mt-3">Иванов Иван</h3>-->
+<!--    <div class="flex items-center text-gray-500 text-md mt-1">-->
+<!--      <i class="fas fa-user mr-2"></i>-->
+<!--      <span>Преподаватель</span>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <nav class="mt-6">-->
+<!--    <a class="block text-lg text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-cyan-300 hover:text-white" href="#">-->
+<!--      <i class="fas fa-home mr-2"></i>Список учеников-->
+<!--    </a>-->
+<!--    <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-cyan-300 hover:text-white" href="#">-->
+<!--      <i class="fas fa-file-alt mr-2"></i>Настройки-->
+<!--    </a>-->
+<!--    <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-cyan-300 hover:text-white" href="#">-->
+<!--      <i class="fas fa-sign-out-alt mr-2"></i>Выйти из аккаунта-->
+<!--    </a>-->
+<!--  </nav>-->
+<!--  <a href="{% url 'home' %}" class="block text-black py-2.5 px-4 my-2 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-cyan-300 hover:text-white mt-auto" href="#">-->
+<!--    <i class="fas fa-home mr-2"></i>Главная страница-->
+<!--  </a>-->
+<!--  <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>-->
+<!--  <p class="mb-1 px-5 py-3 text-left text-xs text-cyan-500">Гимнастика@2024</p>-->
+<!--</div>-->
+
+<!--        <div class="flex-1 p-4">-->
+<!--  <div class="w-full h-full mx-auto border-5 shadow-md">-->
+<!--    <div class="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">-->
+<!--      <div class="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">-->
+<!--        <div class="flex items-center justify-between">-->
+<!--         <div>-->
+<!--    <h3 class="text-xl font-semibold text-slate-800">Список учеников</h3>-->
+<!--    <span class="block w-full h-1 bg-indigo-300 rounded-full mt-2"></span>-->
+<!--</div>-->
+<!--          <div class="flex flex-col gap-2 shrink-0 sm:flex-row">-->
+<!--              <a href="{% url 'student_form' %}">-->
+<!--                  <button class="flex select-none w-48 justify-center items-center gap-2 rounded bg-indigo-600 py-2.5 px-4 text-sm font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-0.85 focus:shadow-none active:opacity-0.85 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" stroke-width="2" class="w-4 h-4">-->
+<!--                <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z"></path>-->
+<!--            </svg>-->
+<!--            Создать анкету-->
+<!--        </button>-->
+<!--              </a>-->
+<!--    </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--     <div class="mt-3 px-2 py-2 flex flex-col gap-2 shrink-0 sm:flex-row">-->
+<!--  <div class="relative">-->
+<!--    <input type="text" id="name_filter" name="name_filter" placeholder="Поиск по ФИО" class="bg-white border-2 h-11 w-96 rounded-md py-2 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ name_filter }}">-->
+<!--    <input type="date" id="date_filter" name="date_filter" class="border-2 hover:border-blue-400 w-48 p-2" value="{{ date_filter }}">-->
+<!--  </div>-->
+<!--  <div class="flex space-x-2 mb-4">-->
+<!--    <button id="filter_button" class="flex items-center justify-center px-4 py-2 bg-white text-black border-2 rounded-md hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-gray-300">-->
+<!--      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />-->
+<!--      </svg>-->
+<!--      <span class="ml-2">Обследования</span>-->
+<!--    </button>-->
+<!--    <button id="button" class="flex items-center justify-center px-4 py-2 bg-white text-black border-2 rounded-md hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-gray-300">-->
+<!--      <span class="ml-2">Поиск</span>-->
+<!--    </button>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--  const filterButton = document.getElementById('filter_button');-->
+<!--  let isFilterActive = false;-->
+
+<!--  filterButton.addEventListener('click', () => {-->
+<!--    if (!isFilterActive) {-->
+<!--      filterButton.classList.add('bg-green-500', 'text-white');-->
+<!--      filterButton.querySelector('svg').classList.add('text-white');-->
+<!--      isFilterActive = true;-->
+<!--    } else {-->
+<!--      filterButton.classList.remove('bg-green-500', 'text-white');-->
+<!--      filterButton.querySelector('svg').classList.remove('text-white');-->
+<!--      isFilterActive = false;-->
+<!--    }-->
+<!--  });-->
+
+<!--  const searchButton = document.getElementById('button');-->
+<!--  searchButton.addEventListener('click', () => {-->
+<!--    const nameFilter = document.getElementById('name_filter').value;-->
+<!--    const dateFilter = document.getElementById('date_filter').value;-->
+<!--    const url = new URL(window.location.href);-->
+<!--    url.searchParams.set('name_filter', nameFilter);-->
+<!--    url.searchParams.set('date_filter', dateFilter);-->
+<!--    url.searchParams.set('filter_active', isFilterActive);-->
+<!--    window.location.href = url.toString();-->
+<!--  });-->
+<!--</script>-->
+<!--      <div class="p-0 overflow-scroll">-->
+<!--        <table class="w-full mt-4 text-left table-auto min-w-max">-->
+<!--          <thead>-->
+<!--            <tr>-->
+<!--              <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">-->
+<!--                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">-->
+<!--                  ФИО-->
+<!--                </p>-->
+<!--              </th>-->
+<!--              <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">-->
+<!--                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">-->
+<!--                  Анкета-->
+<!--                </p>-->
+<!--              </th>-->
+<!--              <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">-->
+<!--                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">-->
+<!--                  Обследования-->
+<!--                </p>-->
+<!--              </th>-->
+<!--              <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">-->
+<!--                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">-->
+<!--                  Результат-->
+<!--                </p>-->
+<!--              </th>-->
+<!--            </tr>-->
+<!--          </thead>-->
+<!--          <tbody>-->
+<!--    {% for student in page_obj %}-->
+<!--    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">-->
+<!--      <td class="px-6 py-4">-->
+<!--        <div class="flex items-center gap-3">-->
+<!--  <div class="flex flex-col">-->
+<!--    <p class="text-sm font-semibold text-slate-700">-->
+<!--      {{ student.name }} {{ student.surname }} {{ student.patronymic }}-->
+<!--    </p>-->
+<!--    <p class="text-sm text-slate-500">-->
+<!--      {{ student.email }}-->
+<!--    </p>-->
+<!--  </div>-->
+<!--  <a href="{% url 'personal_account' student.survey_id %}" class="text-slate-500 hover:text-slate-700 transition-colors duration-300">-->
+<!--    <i class="fas fa-info-circle mr-1"></i>-->
+<!--  </a>-->
+<!--</div>-->
+<!--      </td>-->
+<!--      <td class="px-6 py-4">-->
+<!--        <div class="flex items-center ">-->
+<!--          {% if student.is_created %}-->
+<!--          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">-->
+<!--            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          {% else %}-->
+<!--          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">-->
+<!--            <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          {% endif %}-->
+<!--        </div>-->
+<!--      </td>-->
+<!--           <td class="px-6 py-4">-->
+<!--        <div class="flex items-center ">-->
+<!--          {% if student.anthropometry.first.is_created %}-->
+<!--          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-green-500">-->
+<!--            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          {% else %}-->
+<!--          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">-->
+<!--            <path fill-rule="evenodd" d="M6.72 5.66l11.62 11.62A8.25 8.25 0 006.72 5.66zm10.56 12.68L5.66 6.72a8.25 8.25 0 0011.62 11.62z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          {% endif %}-->
+<!--        </div>-->
+<!--      </td>-->
+<!--      <td class="px-6 py-4">-->
+<!--        <div class="flex items-center ">-->
+<!--          <a href="#" class="text-md text-blue-500">Посмотреть</a>-->
+<!--        </div>-->
+<!--      </td>-->
+<!--    </tr>-->
+<!--    {% endfor %}-->
+<!--  </tbody>-->
+<!--        </table>-->
+<!--      </div>-->
+<!--        <div class="flex justify-center mt-4">-->
+<!--  <nav aria-label="Page navigation">-->
+<!--    <ul class="inline-flex -space-x-px">-->
+<!--      {% if page_obj.has_previous %}-->
+<!--      <li>-->
+<!--        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">-->
+<!--          Назад-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      {% endif %}-->
+
+<!--      {% for page_num in page_obj.paginator.page_range %}-->
+<!--      <li>-->
+<!--        <a href="?page={{ page_num }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white {% if page_num == page_obj.number %}bg-gray-200 dark:bg-gray-700{% endif %}">-->
+<!--          {{ page_num }}-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      {% endfor %}-->
+
+<!--      {% if page_obj.has_next %}-->
+<!--      <li>-->
+<!--        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">-->
+<!--          Следующая-->
+<!--        </a>-->
+<!--      </li>-->
+<!--      {% endif %}-->
+<!--    </ul>-->
+<!--  </nav>-->
+<!--</div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+    <style>
+        @media (max-width: 300px) {
+            .error-message {
+                display: flex; /* Используем flexbox для центрирования содержимого */
+                flex-direction: column; /* Вертикальная ориентация */
+                justify-content: center; /* Центрируем по вертикали */
+                align-items: center; /* Центрируем по горизонтали */
+                height: 100vh; /* Занимаем всю высоту экрана */
+                width: 100%; /* Занимаем всю ширину экрана */
+                position: absolute; /* Чтобы разместить элемент поверх других */
+                top: 0; /* Начнем с верхней части экрана */
+                left: 0; /* Начнем с левой части экрана */
+                background-color: rgba(255, 255, 255, 0.9); /* Полупрозрачный фон */
+                z-index: 10; /* Устанавливаем выше других элементов */
+            }
+
+            .main-content,footer,header {
+                display: none; /* Скрываем основной контент при ширине меньше 300px */
+            }
+        }
+
+        @media (min-width: 301px) {
+            .error-message {
+                display: none; /* Скрываем сообщение об ошибке при ширине больше 300px */
+            }
+            .main-content,footer,header {
+                display: block; /* Показываем основной контент при ширине больше 300px */
+            }
+        }
+    </style>
+
+
+
+<!--<div class="flex items-center justify-center bg-white p-4 shadow-lg rounded-lg">-->
+<!--    <div class="flex items-center">-->
+<!--        &lt;!&ndash; Иконка глобуса и человека &ndash;&gt;-->
+<!--       <div class="flex-shrink-0">-->
+<!--    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" viewBox="0 0 64 64" fill="currentColor">-->
+<!--        <circle cx="32" cy="32" r="30" fill="#6CC24A" />-->
+<!--        <circle cx="32" cy="32" r="28" fill="#FFFFFF" />-->
+<!--        <path fill="#003366" d="M31 4c-1.049 0-2 .845-2 1.882S30.949 8 32 8s2-.845 2-2.118S32.949 4 31 4zM20 14c-1.048 0-2 .843-2 1.879S18.952 18 20 18s2-.843 2-1.879S21.048 14 20 14zM44 14c-1.048 0-2 .843-2 1.879S42.952 18 44 18s2-.843 2-1.879S45.048 14 44 14zM20 30c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM44 30c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/>-->
+<!--        <path fill="#FFD700" d="M32 30c-1.833 0-3.449 1.262-4.156 3.277C26.075 34.289 28 37.902 28 41h8c0-3.098 1.925-6.711 2.156-7.723C35.449 31.262 33.833 30 32 30z"/>-->
+<!--        <rect x="24" y="41" width="16" height="10" fill="#003366" />-->
+<!--        <path fill="#FFD700" d="M25 56h14a3 3 0 01-14 0z"/>-->
+<!--    </svg>-->
+<!--</div>-->
+<!--        &lt;!&ndash; Название логотипа &ndash;&gt;-->
+<!--        <div class="ml-3">-->
+<!--            <h1 class="text-3xl font-bold text-indigo-600">Спорт-карта Казани</h1>-->
+<!--            <p class="text-lg text-gray-600">Виртуальный гид по спортивным площадкам</p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+{% endblock %}
+
+
+
+
